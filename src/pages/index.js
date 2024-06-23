@@ -112,9 +112,9 @@ const slides = [
   {
     title: "Conclusion",
     content: [
-      "Embrace the power of data to enhance our tours",
-      "Position our company as leaders in eco-tourism",
-      "Create unforgettable experiences for our customers"
+      "Embrace the power of data to enhance our clients tours",
+      "Position our clients as leaders in eco-tourism",
+      "Create unforgettable experiences for our clients customers"
     ]
   },
   {
