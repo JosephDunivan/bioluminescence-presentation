@@ -1,6 +1,99 @@
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import * as Slider from '@radix-ui/react-slider';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line } from 'recharts';
+import { MapPin, Droplet, Thermometer, Moon, Wind, ChevronLeft, ChevronRight } from 'lucide-react';
 import './index.css';
+
+const DataCollectionApp = () => {
+  const [waterTemp, setWaterTemp] = useState(20);
+  const [salinity, setSalinity] = useState(35);
+  const [turbulence, setTurbulence] = useState(2);
+  const [moonPhase, setMoonPhase] = useState(0);
+  const [userScore, setUserScore] = useState(0);
+  const [historicalData, setHistoricalData] = useState([]);
+
+  const primaryColor = 'rgb(37, 53, 81)';
+  const secondaryColor = 'rgb(252, 156, 3)';
+
+  useEffect(() => {
+    // Simulate loading historical data
+    setHistoricalData([
+      { date: '2023-06-01', bioluminescence: 3 },
+      { date: '2023-06-08', bioluminescence: 5 },
+      { date: '2023-06-15', bioluminescence: 8 },
+      { date: '2023-06-22', bioluminescence: 6 },
+    ]);
+  }, []);
+
+  const handleSubmit = () => {
+    const newScore = Math.floor((waterTemp + salinity + turbulence + (10 - moonPhase)) / 4);
+    setUserScore(newScore);
+    setHistoricalData([...historicalData, { date: new Date().toISOString().split('T')[0], bioluminescence: newScore }]);
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto" style={{ color: primaryColor }}>
+      <h2 className="text-2xl font-bold mb-4" style={{ color: secondaryColor }}>Bioluminescence Predictor</h2>
+
+      <div className="mb-4">
+        <label className="flex items-center">
+          <Thermometer className="mr-2" color={secondaryColor} />
+          Water Temperature: {waterTemp}°C
+        </label>
+      </div>
+
+      <div className="mb-4">
+        <label className="flex items-center">
+          <Droplet className="mr-2" color={secondaryColor} />
+          Salinity: {salinity} ppt
+        </label>
+
+      </div>
+
+      <div className="mb-4">
+        <label className="flex items-center">
+          <Wind className="mr-2" color={secondaryColor} />
+          Water Turbulence: {turbulence}
+        </label>
+
+      </div>
+
+      <div className="mb-4">
+        <label className="flex items-center">
+          <Moon className="mr-2" color={secondaryColor} />
+          Moon Phase: {moonPhase}
+        </label>
+
+      </div>
+
+      <button
+        onClick={handleSubmit}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+        style={{ backgroundColor: secondaryColor }}
+      >
+        Submit Data
+      </button>
+
+      {userScore > 0 && (
+        <div className="mt-4">
+          <h3 className="text-xl font-bold">Your Bioluminescence Score: {userScore}</h3>
+          <p>Great job! You've earned a "Citizen Scientist" badge!</p>
+        </div>
+      )}
+
+      <div className="mt-8">
+        <h3 className="text-xl font-bold mb-2">Historical Bioluminescence Data</h3>
+        <LineChart width={500} height={300} data={historicalData}>
+          <XAxis dataKey="date" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="bioluminescence" stroke={secondaryColor} />
+        </LineChart>
+      </div>
+    </div>
+  );
+};
 
 const slides = [
   {
@@ -63,6 +156,11 @@ const slides = [
       "Moderate: Portable test kits (nutrients, pH)",
       "Advanced: Partnerships with research institutions for complex analysis"
     ]
+  },
+  {
+    title: "Interactive Data Collection Demo",
+    content: <DataCollectionApp />,
+    type: "interactive"
   },
   {
     title: "Citizen Science Opportunity",
@@ -138,6 +236,8 @@ const IndexPage = () => {
   const renderContent = (content) => {
     if (typeof content === 'string') {
       return <p className="text-xl mb-4">{content}</p>;
+    } else if (slides[currentSlide].type === 'interactive') {
+      return slides[currentSlide].content;
     } else if (Array.isArray(content)) {
       return (
         <ul className="list-disc list-inside text-xl">
